@@ -1,4 +1,4 @@
-const notes = JSON.parse(localStorage.getItem('notes'));
+var notes = JSON.parse(localStorage.getItem('notes'));
 const addNoteBtn = document.getElementById('add_note_btn');
 const saveBtn = document.getElementById('save_note');
 const deleteBtn = document.getElementById('delete_note');
@@ -11,6 +11,9 @@ saveBtn.addEventListener('click', saveNote);
 editBtn.addEventListener('click', editNote);
 deleteBtn.addEventListener('click', deleteNote);
 
+if(notes == null) {
+    notes = [];
+}
 populateNotesList(notes);
 
 function populateNotesList(notes) {
@@ -56,7 +59,6 @@ function addNewNote() {
     noteTextarea.removeAttribute('readonly');
     noteTextarea.value = "";
     deleteBtn.setAttribute('data-note_id', this.getAttribute(''));
-    console.log(saveBtn);
     saveBtn.style.display = "block";
     editBtn.style.display = "none";
     deleteBtn.style.display = "none";
