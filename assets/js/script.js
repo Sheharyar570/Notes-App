@@ -1,11 +1,16 @@
 const notes = localStorage.getItem('notes');
 const addNoteBtn = document.getElementById('add_note_btn');
 const saveBtn = document.getElementById('save_note');
+const deleteBtn = document.getElementById('delete_note');
+const editBtn = document.getElementById('edit_note');
+const editNotesHeader = document.getElementsByClassName('edit_notes_header')[0];
+const noteTextarea = document.getElementById('note_textarea');
 
 addNoteBtn.addEventListener('click', addNewNote);
 saveBtn.addEventListener('click', saveNote);
+editBtn.addEventListener('click', editNote);
+deleteBtn.addEventListener('click', deleteNote);
 
-// console.log(JSON.parse(notes));
 populateNotesList(JSON.parse(notes));
 
 function populateNotesList(notes) {
@@ -26,10 +31,23 @@ function populateNotesList(notes) {
     });
 }
 
+function displayNote() {
+    noteTextarea.value = "";
+    
+    editNotesHeader.style.display = "block";
+    saveBtn.style.display = "none";
+    deleteBtn.setAttribute('data-note_id', this.getAttribute('data-id'));
+    
+    const notesList = JSON.parse(localStorage.getItem('notes'));
+    notesList.forEach(note => {
+        if(note.id == this.getAttribute('data-id')) {
+            noteTextarea.value = note.text;
+        }
+    });
+}
+
 
 function addNewNote() {
-    const noteTextarea = document.getElementById('note_textarea');
-    const editNotesHeader = document.getElementsByClassName('edit_notes_header')[0];
     noteTextarea.removeAttribute('readonly');
     editNotesHeader.style.display = "block";
     this.style.display = "none";
@@ -38,7 +56,6 @@ function addNewNote() {
 }
 
 function saveNote() {
-    const noteTextarea = document.getElementById('note_textarea');
     const noteText = noteTextarea.value;
     
     const note = {
@@ -49,4 +66,12 @@ function saveNote() {
     const notesList = JSON.parse(localStorage.getItem('notes'));
     notesList.push(note);
     localStorage.setItem('notes', JSON.stringify(notesList));
+}
+
+function saveNote() {
+
+}
+
+function saveNote() {
+
 }
