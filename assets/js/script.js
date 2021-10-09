@@ -1,4 +1,4 @@
-const notes = localStorage.getItem('notes');
+const notes = JSON.parse(localStorage.getItem('notes'));
 const addNoteBtn = document.getElementById('add_note_btn');
 const saveBtn = document.getElementById('save_note');
 const deleteBtn = document.getElementById('delete_note');
@@ -11,11 +11,12 @@ saveBtn.addEventListener('click', saveNote);
 editBtn.addEventListener('click', editNote);
 deleteBtn.addEventListener('click', deleteNote);
 
-populateNotesList(JSON.parse(notes));
+populateNotesList(notes);
 
 function populateNotesList(notes) {
     const notesList = document.getElementById('notes_list');
-
+    notesList.innerHTML = "";
+    
     notes.forEach(note => {
         let text = document.createTextNode(note.text);
         let note_item = document.createElement("div");
@@ -33,45 +34,91 @@ function populateNotesList(notes) {
 
 function displayNote() {
     noteTextarea.value = "";
-    
     editNotesHeader.style.display = "block";
     saveBtn.style.display = "none";
+    addNoteBtn.style.display = "flex";
+    saveBtn.style.display = "none";
+    editBtn.style.display = "block";
+    deleteBtn.style.display = "block";
     deleteBtn.setAttribute('data-note_id', this.getAttribute('data-id'));
+    editBtn.setAttribute('data-note_id', this.getAttribute('data-id'));
     
-    const notesList = JSON.parse(localStorage.getItem('notes'));
-    notesList.forEach(note => {
+    notes.forEach(note => {
         if(note.id == this.getAttribute('data-id')) {
             noteTextarea.value = note.text;
         }
     });
+    noteTextarea.setAttribute('readonly', 'true');
 }
 
 
 function addNewNote() {
     noteTextarea.removeAttribute('readonly');
+    noteTextarea.value = "";
+    deleteBtn.setAttribute('data-note_id', this.getAttribute(''));
+    console.log(saveBtn);
+    saveBtn.style.display = "block";
+    editBtn.style.display = "none";
+    deleteBtn.style.display = "none";
     editNotesHeader.style.display = "block";
     this.style.display = "none";
     noteTextarea.focus();
-    
 }
 
 function saveNote() {
     const noteText = noteTextarea.value;
-    
-    const note = {
-        id: Date.now(),
-        text: noteText.trim()
+    const noteID = this.getAttribute('data-note_id')
+
+    if(noteText != '') {
+        if(noteID == '') {
+            const note = {
+                id: Date.now(),
+                text: noteText.trim()
+            }
+            notes.push(note);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+        else {
+            notes.forEach(note => {
+                if(note.id == noteID) {
+                    note.text = noteText;                    
+                }
+            });
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+        populateNotesList(notes);
+        editNotesHeader.style.display = "none";
+        noteTextarea.value = "";
+        addNoteBtn.style.display = "flex";
+    }
+}
+
+function editNote() {
+    noteTextarea.removeAttribute('readonly');
+    addNoteBtn.style.display = "none";
+    saveBtn.style.display = "block";
+    editBtn.style.display = "none";
+    deleteBtn.style.display = "none";
+
+    saveBtn.setAttribute('data-note_id', this.getAttribute('data-note_id'));
+    noteTextarea.focus();
+}
+
+function deleteNote() {
+    const noteID = this.getAttribute('data-note_id');
+    var key = -1;
+    for(let i = 0; i < notes.length; i++) {
+        if(noteID == notes[i].id) {
+            key = i;
+            break;
+        }
     }
 
-    const notesList = JSON.parse(localStorage.getItem('notes'));
-    notesList.push(note);
-    localStorage.setItem('notes', JSON.stringify(notesList));
-}
-
-function saveNote() {
-
-}
-
-function saveNote() {
-
+    if( key > -1 ) {
+        notes.splice(key, 1);
+        localStorage.setItem('notes', JSON.stringify(notes));
+        populateNotesList(notes);
+        editNotesHeader.style.display = "none";
+        noteTextarea.value = "";
+    }
 }
